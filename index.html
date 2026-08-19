@@ -147,6 +147,12 @@
   table.taxtbl td.c{text-align:center} table.taxtbl td.r{text-align:right; white-space:nowrap}
   table.taxtbl tr.tot td{font-weight:700; background:#f7f9fb}
   .party .row .lb{min-width:auto}
+  /* ---- Digital signature stamp ---- */
+  .digi{border:1px solid #3a7d3a; color:#1f6b1f; background:#f2fbf2; border-radius:6px; padding:7px 11px; display:inline-block; font-size:11px; line-height:1.55; text-align:left}
+  .digi .digihd{font-weight:700; letter-spacing:.3px; margin-bottom:2px}
+  .sign .digi{margin-top:24px}
+  .signarea{margin-top:22px; display:flex; flex-direction:column; align-items:flex-end; gap:8px}
+  .repname{font-size:12px; font-style:italic; color:#333}
 
 </style>
 </head>
@@ -607,6 +613,30 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
   function val(scope,tag){ return textOf(find(scope,tag)); }
   function findAll(scope,tag){ if(!scope) return []; return Array.prototype.slice.call(scope.getElementsByTagName(tag)); }
   function kids(el){ return el ? Array.prototype.filter.call(el.childNodes,function(n){return n.nodeType===1;}) : []; }
+  function allByLocal(root,name){ var out=[],a=root.getElementsByTagName("*"); for(var i=0;i<a.length;i++){ if(ln(a[i])===name) out.push(a[i]); } return out; }
+  function firstLocalIn(scope,name){ var a=allByLocal(scope,name); return a.length?a[0]:null; }
+  function parseSigs(root){
+    var sigs=[];
+    allByLocal(root,"Signature").forEach(function(s){
+      var subj=textOf(firstLocalIn(s,"X509SubjectName"));
+      var time=textOf(firstLocalIn(s,"SigningTime"));
+      if(!subj && !time) return;
+      var cn=/CN=([^,]+)/i.exec(subj); var mst=/MST[:=]\s*([0-9\-]+)/i.exec(subj);
+      sigs.push({signer:cn?cn[1].trim():(subj||""), mst:mst?mst[1]:"", time:time});
+    });
+    // de-dupe identical signer+time
+    var seen={}; return sigs.filter(function(s){ var k=s.signer+"|"+s.time; if(seen[k]) return false; seen[k]=1; return true; });
+  }
+  function sigBox(sigs, fbName, fbTime){
+    var list=(sigs&&sigs.length)?sigs:((fbName||fbTime)?[{signer:fbName||"",mst:"",time:fbTime||""}]:[]);
+    if(!list.length) return "";
+    return list.map(function(s){
+      return '<div class="digi"><div class="digihd">Đã ký điện tử</div>'+
+        (s.signer?'<div>Ký bởi: '+esc(s.signer)+'</div>':'')+
+        (s.mst?'<div>MST: '+esc(s.mst)+'</div>':'')+
+        (s.time?'<div>Ký ngày: '+fmtDateTime(s.time)+'</div>':'')+'</div>';
+    }).join("");
+  }
   function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
   var nf = new Intl.NumberFormat("vi-VN");
   function money(v){ if(v===""||v==null) return ""; var n=Number(String(v).replace(",",".")); return isNaN(n)?esc(v):nf.format(n); }
@@ -648,7 +678,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       ban:{ten:val(nban,"Ten"),mst:val(nban,"MST"),dchi:val(nban,"DChi"),sdt:val(nban,"SDThoai"),stk:val(nban,"STKNHang"),nh:val(nban,"TNHang")},
       mua:{hoTen:val(nmua,"HVTNMHang"),ten:val(nmua,"Ten"),mst:val(nmua,"MST"),dchi:val(nmua,"DChi"),httt:val(nmua,"HTTToan"),stk:val(nmua,"STKNHang")},
       items:items,taxLines:taxLines,tgtCthue:val(toan,"TgTCThue"),tgtThue:val(toan,"TgTThue"),
-      tgtttBso:val(toan,"TgTTTBSo"),tgtttBchu:val(toan,"TgTTTBChu"),signTime:val(find(root,"DSCKS"),"SigningTime")};
+      tgtttBso:val(toan,"TgTTTBSo"),tgtttBchu:val(toan,"TgTTTBChu"),signTime:val(find(root,"DSCKS"),"SigningTime"),sigs:parseSigs(root)};
   }
 
   // A "leaf group" = element that has element children, all of which are leaves (no grandchildren)
@@ -689,7 +719,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       cqt:val(tk,"tenCQTNoiNop"),ngayLap:val(tk,"ngayLapTKhai"),
       nnt:{mst:val(nnt,"mst"),ten:val(nnt,"tenNNT"),dchi:val(nnt,"dchiNNT"),tinh:val(nnt,"tenTinhNNT"),dthoai:val(nnt,"dthoaiNNT")},
       nguoiKy:val(tk,"nguoiDaiDienTheoPhapLuat")||val(find(root,"CTieuTKhaiChinh"),"nguoiDaiDienTheoPhapLuat"),
-      signTime:val(find(root,"CKyDTu"),"SigningTime"),forms:forms};
+      signTime:val(find(root,"CKyDTu"),"SigningTime"),sigs:parseSigs(root),forms:forms};
   }
 
   // ===== render: invoice =====
@@ -702,7 +732,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     var pad=""; for(var i=inv.items.length;i<3;i++){ pad+='<tr><td class="c">&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>'; }
     var taxSum=inv.taxLines.map(function(t){ return '<tr><td class="lb">Thuế suất GTGT '+esc(t.tsuat)+' — Tiền thuế GTGT:</td><td class="rr">'+money(t.tthue)+'</td></tr>'; }).join("");
     var cqt=inv.mccqt?'<div class="cqt">Mã của cơ quan thuế: '+esc(inv.mccqt)+'</div>':'';
-    var digi=inv.signTime?'<div class="digi">Ký bởi: '+esc(inv.ban.ten||"")+'<br>Ký ngày: '+fmtDateTime(inv.signTime)+'</div>':'';
+    var digi=sigBox(inv.sigs, inv.ban.ten, inv.signTime);
     return '<div class="sheet" id="sheet"><div class="hd"><div class="seller">'+
       '<div class="co">'+esc(inv.ban.ten)+'</div>'+
       (inv.ban.mst?'<div>Mã số thuế: '+esc(inv.ban.mst)+'</div>':'')+
@@ -748,7 +778,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
   }
   function renderTax(t){
     var ky=t.ky?('Kỳ tính thuế: năm '+esc(t.ky)+(t.tuNgay?' ('+esc(t.tuNgay)+' - '+esc(t.denNgay)+')':'')):'';
-    var digi=t.signTime?'<div class="digi">Ký điện tử ngày: '+fmtDateTime(t.signTime)+(t.nguoiKy?'<br>Người đại diện: '+esc(t.nguoiKy):'')+'</div>':'';
+    var digi='<div class="signarea">'+sigBox(t.sigs, "", t.signTime)+(t.nguoiKy?'<div class="repname">Người đại diện theo pháp luật: '+esc(t.nguoiKy)+'</div>':'')+'</div>';
     var forms=t.forms.map(renderForm).join("");
     return '<div class="sheet tax" id="sheet">'+
       '<div class="title"><div class="t1 blue">'+esc((t.tenTKhai||"TỜ KHAI THUẾ").toUpperCase())+'</div>'+
