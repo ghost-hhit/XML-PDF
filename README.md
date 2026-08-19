@@ -1,51 +1,42 @@
-# Hóa đơn điện tử XML → PDF
+# Hóa đơn & BCTC: XML → PDF
 
-Công cụ web tĩnh chuyển **hóa đơn điện tử (.xml)** theo chuẩn Tổng cục Thuế (QĐ 1450/QĐ-TCT) thành **bản thể hiện PDF**. Chạy hoàn toàn trong trình duyệt — file XML **không** được gửi lên bất kỳ máy chủ nào, phù hợp để xử lý hóa đơn nội bộ.
+Công cụ web tĩnh chuyển **XML thuế của Việt Nam** thành **bản thể hiện PDF**, chạy hoàn toàn trong trình duyệt (dữ liệu không rời khỏi máy). Tự nhận diện và xử lý **hai loại file**:
+
+1. **Hóa đơn điện tử** (chuẩn TT78/ND123, thẻ gốc `<HDon>`) → bản thể hiện hóa đơn GTGT.
+2. **Hồ sơ khai thuế / Báo cáo tài chính từ HTKK** (thẻ gốc `<HSoThueDTu>`) → bảng chỉ tiêu tài chính, hiện có nhãn chuẩn (TT133) cho:
+   - Bảng cân đối kế toán (B01a-DNN)
+   - Kết quả hoạt động kinh doanh (B02-DNN)
+   - Lưu chuyển tiền tệ (B03-DNN — nhãn các chỉ tiêu tổng hợp)
+   - Bảng cân đối tài khoản (theo số hiệu tài khoản)
 
 ## Tính năng
 
-- Kéo–thả hoặc chọn **một hay nhiều** file XML cùng lúc.
-- Xem trước bản thể hiện đúng bố cục hóa đơn GTGT (tiêu đề đỏ, mẫu số/ký hiệu/số, người bán, người mua, bảng hàng hóa, tổng tiền, tiền bằng chữ, thời gian ký số, mã cơ quan thuế).
-- **Tải PDF**: xuất PDF một chạm (ảnh hóa, khổ A4, tự chia trang).
-- **In / Lưu PDF**: dùng hộp thoại in của trình duyệt (Ctrl/Cmd + P → *Save as PDF*) — chữ nét, chọn/copy được, dung lượng nhẹ.
-- **Tải tất cả (PDF)**: khi mở nhiều file, xuất PDF cho từng hóa đơn.
-- Tự chứa: đã nhúng sẵn jsPDF + html2canvas, **không cần internet** khi dùng.
+- Kéo–thả hoặc chọn **nhiều file** cùng lúc; danh sách bên trái đánh dấu từng file là *HĐ* hay *Tờ khai/BCTC*.
+- **Tải PDF** một chạm (A4, tự chia trang) — hoặc **In / Lưu PDF** qua trình duyệt (chữ nét, chọn được, nhẹ). Với BCTC nhiều trang, nút *In / Lưu PDF* thường đẹp hơn.
+- **Tải tất cả (PDF)** khi mở nhiều file.
+- Tự chứa: đã nhúng jsPDF + html2canvas, **không cần internet** khi dùng.
 
-## Dùng thử tại chỗ
+## Cách dùng nhanh
 
-Mở thẳng `index.html` bằng trình duyệt là chạy được ngay (không cần cài gì).
+Mở thẳng `index.html` bằng trình duyệt, kéo file XML vào là chạy. Không cần cài gì.
 
 ## Đưa lên GitHub Pages
 
-1. Tạo một repo mới trên GitHub (ví dụ `hddt-pdf`).
-2. Đẩy file `index.html` (và `README.md` nếu muốn) lên nhánh `main`:
+Đẩy `index.html` (ở thư mục gốc repo) lên nhánh `main`, rồi vào **Settings → Pages**: Source = *Deploy from a branch*, Branch = `main` / `(root)` → Save. Trang chạy tại `https://<tài-khoản>.github.io/<tên-repo>/`.
 
-   ```bash
-   git init
-   git add index.html README.md
-   git commit -m "Công cụ chuyển hóa đơn XML sang PDF"
-   git branch -M main
-   git remote add origin https://github.com/<tài-khoản>/hddt-pdf.git
-   git push -u origin main
-   ```
+## Cách nhận diện của tool
 
-3. Vào **Settings → Pages** của repo:
-   - **Source**: `Deploy from a branch`
-   - **Branch**: `main` · thư mục `/ (root)` → **Save**.
-4. Chờ khoảng 1 phút, trang sẽ chạy tại:
-   `https://<tài-khoản>.github.io/hddt-pdf/`
+- Có thẻ `NDHDon` hoặc gốc `HDon` → xử lý như **hóa đơn**.
+- Gốc `HSoThueDTu` hoặc có `TKhaiThue` → xử lý như **tờ khai/BCTC**.
+- Không khớp cả hai → báo lỗi rõ ràng, không "đoán bừa".
 
-> `index.html` phải nằm ở thư mục gốc để mở đúng địa chỉ trên. Nếu để trong thư mục con, địa chỉ sẽ có thêm đường dẫn thư mục đó.
+## Mở rộng
 
-## Trường dữ liệu đọc từ XML
+Bộ nhãn chỉ tiêu để trong một chỗ (biến `LBL` / `FORMS` trong `index.html`). Muốn hỗ trợ thêm mẫu tờ khai khác (GTGT 01, TNCN, TNDN…) thì bổ sung nhãn cho mã chỉ tiêu tương ứng; các mẫu chưa có nhãn vẫn hiển thị **mã chỉ tiêu + giá trị** đúng cột nên vẫn đọc được.
 
-Theo chuẩn: `TTChung` (THDon, KHMSHDon, KHHDon, SHDon, NLap, DVTTe), `NBan`/`NMua`, `DSHHDVu/HHDVu`, `TToan` (TgTCThue, TgTThue, TgTTTBSo, TgTTTBChu), `MCCQT`, và thời gian ký số trong `DSCKS`. Bộ đọc bỏ qua namespace nên chạy được với XML của nhiều nhà cung cấp.
+## Lưu ý pháp lý
 
-## Lưu ý
-
-- Bản PDF/bản in **chỉ là bản thể hiện**; file XML mới là bản gốc có giá trị pháp lý.
-- File cần là hóa đơn XML chuẩn Tổng cục Thuế, mã hóa **UTF-8** (mặc định của hầu hết phần mềm hóa đơn).
-- Cấu trúc mỗi nhà cung cấp có thể khác đôi chút; nếu một trường không hiện, gửi mình file mẫu (đã che số liệu) để bổ sung ánh xạ.
+Bản PDF/bản in chỉ là **bản thể hiện** để xem, in, lưu trữ nội bộ. File **XML gốc** mới có giá trị pháp lý.
 
 ## Kèm theo
 
