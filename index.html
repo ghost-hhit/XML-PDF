@@ -165,6 +165,19 @@
   /* ---- Digital signature stamp ---- */
   .digi{border:1px solid #3a7d3a; color:#1f6b1f; background:#f2fbf2; border-radius:6px; padding:7px 11px; display:inline-block; font-size:11px; line-height:1.55; text-align:left; margin-top:10px}
   .digi .digihd{font-weight:700; letter-spacing:.3px; margin-bottom:2px}
+  /* ---- Print robustness ---- */
+  table.taxtbl{table-layout:fixed}
+  table.taxtbl td.ci{white-space:normal; word-break:break-word}
+  @media print{
+    *{-webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;}
+    .sheet.tax{font-size:10.5px}
+    table.taxtbl thead{display:table-header-group}
+    table.taxtbl tr{break-inside:avoid; page-break-inside:avoid}
+    .formblock{break-inside:auto}
+    .formttl{break-after:avoid}
+    .sigfoot, .digi, .lapngay{break-inside:avoid; page-break-inside:avoid}
+    .sigfoot{break-before:auto}
+  }
 
 </style>
 </head>
