@@ -147,12 +147,24 @@
   table.taxtbl td.c{text-align:center} table.taxtbl td.r{text-align:right; white-space:nowrap}
   table.taxtbl tr.tot td{font-weight:700; background:#f7f9fb}
   .party .row .lb{min-width:auto}
+  /* ---- Tax official layout ---- */
+  .taxhd{display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px}
+  .taxhd .unit div{margin:1px 0}
+  .sheet.tax .title .date{font-style:italic}
+  .formttl{display:flex; justify-content:space-between; align-items:flex-end}
+  .formttl .mauso{font-weight:400; font-style:italic; font-size:11px; color:#555; white-space:nowrap; padding-left:10px}
+  table.taxtbl td.ci{text-align:left}
+  table.taxtbl th.tc{width:44%; text-align:left}
+  table.taxtbl tbody{}
+  .lapngay{text-align:right; font-style:italic; margin-top:12px; font-size:12px; padding-right:12px}
+  .sigfoot{display:flex; justify-content:space-around; text-align:center; margin-top:6px}
+  .sigfoot .col{min-width:150px; padding:0 6px}
+  .sigfoot .role{font-weight:700; font-size:12px}
+  .sigfoot .kyhoten{font-style:italic; font-size:10.5px; color:#444}
+  .sigfoot .nm{margin-top:6px; font-weight:600; font-size:12px}
   /* ---- Digital signature stamp ---- */
-  .digi{border:1px solid #3a7d3a; color:#1f6b1f; background:#f2fbf2; border-radius:6px; padding:7px 11px; display:inline-block; font-size:11px; line-height:1.55; text-align:left}
+  .digi{border:1px solid #3a7d3a; color:#1f6b1f; background:#f2fbf2; border-radius:6px; padding:7px 11px; display:inline-block; font-size:11px; line-height:1.55; text-align:left; margin-top:10px}
   .digi .digihd{font-weight:700; letter-spacing:.3px; margin-bottom:2px}
-  .sign .digi{margin-top:24px}
-  .signarea{margin-top:22px; display:flex; flex-direction:column; align-items:flex-end; gap:8px}
-  .repname{font-size:12px; font-style:italic; color:#333}
 
 </style>
 </head>
@@ -598,12 +610,18 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     B03:{"01":"Lợi nhuận trước thuế","20":"Lưu chuyển tiền thuần từ hoạt động kinh doanh","30":"Lưu chuyển tiền thuần từ hoạt động đầu tư","40":"Lưu chuyển tiền thuần từ hoạt động tài chính","50":"Lưu chuyển tiền thuần trong kỳ","60":"Tiền và tương đương tiền đầu kỳ","61":"Ảnh hưởng của thay đổi tỷ giá hối đoái quy đổi ngoại tệ","70":"Tiền và tương đương tiền cuối kỳ"}
   };
   // form container -> {title, map}
-  var FORMS = {
-    "CTieuTKhaiChinh":{title:"Báo cáo tình hình tài chính (Bảng cân đối kế toán) — B01a-DNN", map:LBL.B01a, acct:false},
-    "PL_KQHDSXKD":{title:"Báo cáo kết quả hoạt động kinh doanh — B02-DNN", map:LBL.B02, acct:false},
-    "PL_LCTTTT":{title:"Báo cáo lưu chuyển tiền tệ — B03-DNN", map:LBL.B03, acct:false},
-    "PL_CDTK":{title:"Bảng cân đối tài khoản", map:{}, acct:true}
-  };
+  function prettyTag(t){ return String(t).replace(/^PL_/,"Phụ lục ").replace(/_/g," "); }
+  function formMeta(maTKhai, tag, tenTKhai){
+    var bctc=/^683/.test(maTKhai||"");
+    if(bctc){
+      if(tag==="CTieuTKhaiChinh") return {title:"Báo cáo tình hình tài chính (Bảng cân đối kế toán)",map:LBL.B01a,acct:false,mauso:"Mẫu số B01a-DNN",hierType:"bs"};
+      if(tag==="PL_KQHDSXKD") return {title:"Báo cáo kết quả hoạt động kinh doanh",map:LBL.B02,acct:false,mauso:"Mẫu số B02-DNN",hierType:"is"};
+      if(tag==="PL_LCTTTT") return {title:"Báo cáo lưu chuyển tiền tệ",map:LBL.B03,acct:false,mauso:"Mẫu số B03-DNN",hierType:"cf"};
+      if(tag==="PL_CDTK") return {title:"Bảng cân đối tài khoản",map:{},acct:true,mauso:"Mẫu số F01-DNN",hierType:null};
+    }
+    if(tag==="CTieuTKhaiChinh") return {title:(tenTKhai||"Nội dung tờ khai"),map:{},acct:false,mauso:"",hierType:null};
+    return {title:prettyTag(tag),map:{},acct:false,mauso:"",hierType:null};
+  }
   var GROUP_LBL = {SoCuoiNam:"Số cuối năm",SoDauNam:"Số đầu năm",SoCuoiKy:"Số cuối kỳ",SoDauKy:"Số đầu kỳ",NamNay:"Năm nay",NamTruoc:"Năm trước",No:"Nợ",Co:"Có",SoDuDauKy:"Số dư đầu kỳ",SoPhatSinhTrongKy:"Số phát sinh trong kỳ",SoDuCuoiKy:"Số dư cuối kỳ",ThuyetMinh:"Thuyết minh"};
 
   // ===== helpers =====
@@ -700,25 +718,49 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     })(container,"");
     return cols;
   }
+  // extract columns from a container: handles both flat (direct ct leaves) and grouped (BCTC)
+  function extractForm(container){
+    var cols=[], order=[], seen={};
+    function addCode(k){ if(!seen[k]){seen[k]=1;order.push(k);} }
+    var direct=kids(container).filter(function(c){ return kids(c).length===0 && (/^ct/i.test(ln(c))||ln(c)==="tongCong"); });
+    if(direct.length){
+      var fmap={}, fany=false;
+      direct.forEach(function(l){ var v=textOf(l); fmap[ln(l)]=v; if(v!=="") fany=true; addCode(ln(l)); });
+      if(fany) cols.push({label:"Số tiền", map:fmap});
+    }
+    (function walk(el,prefix){
+      kids(el).forEach(function(c){
+        if(kids(c).length===0) return;
+        if(isLeafGroup(c)){
+          var map={}, any=false;
+          kids(c).forEach(function(leaf){ var v=textOf(leaf); map[ln(leaf)]=v; if(v!=="") any=true; addCode(ln(leaf)); });
+          if(any) cols.push({label:(prefix?prefix+" — ":"")+groupLabel(ln(c)), map:map});
+        } else { walk(c,(prefix?prefix+" — ":"")+groupLabel(ln(c))); }
+      });
+    })(container,"");
+    return {cols:cols, codes:order};
+  }
   function parseTax(root){
     var tk=find(root,"TKhaiThue"), nnt=find(root,"NNT");
+    var maTKhai=val(tk,"maTKhai"), tenTKhai=val(tk,"tenTKhai");
+    var containers=[];
+    var main=find(root,"CTieuTKhaiChinh"); if(main) containers.push({tag:"CTieuTKhaiChinh",el:main});
+    var pluc=find(root,"PLuc"); if(pluc) kids(pluc).forEach(function(p){ containers.push({tag:ln(p),el:p}); });
     var forms=[];
-    Object.keys(FORMS).forEach(function(tag){
-      var el=find(root,tag);
-      if(!el) return;
-      var cols=valueColumns(el).filter(function(c){ return c.nonEmpty; });
-      if(!cols.length) return;
-      // union of codes in document order (first non-empty column drives order)
-      var order=[], seen={};
-      cols.forEach(function(c){ Object.keys(c.map).forEach(function(k){ if(!seen[k]){ seen[k]=1; order.push(k); } }); });
-      forms.push({tag:tag,title:FORMS[tag].title,map:FORMS[tag].map,acct:FORMS[tag].acct,cols:cols,codes:order});
+    containers.forEach(function(cc){
+      var ex=extractForm(cc.el);
+      if(!ex.cols.length) return;
+      var meta=formMeta(maTKhai,cc.tag,tenTKhai);
+      forms.push({tag:cc.tag,title:meta.title,map:meta.map,acct:meta.acct,mauso:meta.mauso,hierType:meta.hierType,cols:ex.cols,codes:ex.codes});
     });
     return {type:"tax",
-      maTKhai:val(tk,"maTKhai"),tenTKhai:val(tk,"tenTKhai"),
+      maTKhai:maTKhai,tenTKhai:tenTKhai,
       ky:val(tk,"kyKKhai"),tuNgay:val(tk,"kyKKhaiTuNgay"),denNgay:val(tk,"kyKKhaiDenNgay"),
       cqt:val(tk,"tenCQTNoiNop"),ngayLap:val(tk,"ngayLapTKhai"),
       nnt:{mst:val(nnt,"mst"),ten:val(nnt,"tenNNT"),dchi:val(nnt,"dchiNNT"),tinh:val(nnt,"tenTinhNNT"),dthoai:val(nnt,"dthoaiNNT")},
       nguoiKy:val(tk,"nguoiDaiDienTheoPhapLuat")||val(find(root,"CTieuTKhaiChinh"),"nguoiDaiDienTheoPhapLuat"),
+      nguoiLap:val(find(root,"CTieuTKhaiChinh"),"nguoiLapBieu")||val(tk,"nguoiLapBieu"),
+      keToan:val(find(root,"CTieuTKhaiChinh"),"keToanTruong")||val(tk,"keToanTruong"),
       signTime:val(find(root,"CKyDTu"),"SigningTime"),sigs:parseSigs(root),forms:forms};
   }
 
@@ -757,40 +799,66 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       '<div class="foot">Bản thể hiện của hóa đơn điện tử — không có giá trị pháp lý thay cho file XML gốc.</div></div>';
   }
 
-  // ===== render: tax =====
-  function labelFor(form,code){
-    var n=code.replace(/^ct/i,"");
-    if(form.acct){ if(code==="tongCong") return "TỔNG CỘNG"; return "Tài khoản "+n; }
-    if(code==="tongCong") return "TỔNG CỘNG";
-    return form.map[n]||"";
+  // ===== render: tax (bố cục chuẩn) =====
+  var MAUSO={CTieuTKhaiChinh:"Mẫu số B01a-DNN",PL_KQHDSXKD:"Mẫu số B02-DNN",PL_LCTTTT:"Mẫu số B03-DNN",PL_CDTK:"Mẫu số F01-DNN"};
+  function stripCt(code){ return code.replace(/^ct/i,""); }
+  function hier(form,code){
+    if(code==="tongCong") return {bold:true,indent:0};
+    var n=stripCt(code), h=form.hierType;
+    if(h==="bs"){ var main=/0$/.test(n); return {bold:main,indent:main?0:1}; }
+    if(h==="is"){ return {bold:/^(10|20|30|40|50|60)$/.test(n),indent:n==="23"?1:0}; }
+    if(h==="cf"){ return {bold:/^(20|30|40|50|60|70)$/.test(n),indent:0}; }
+    return {bold:false,indent:0};
   }
-  function codeCell(form,code){ if(code==="tongCong") return ""; var n=code.replace(/^ct/i,""); return esc(n); }
+  function labelFor(form,code){
+    if(code==="tongCong") return "TỔNG CỘNG";
+    if(form.acct) return "";
+    return form.map[stripCt(code)]||"";
+  }
   function renderForm(form){
-    var head='<tr><th class="mc">Mã</th><th class="tc">Chỉ tiêu</th>'+form.cols.map(function(c){return '<th class="vc">'+esc(c.label)+'</th>';}).join("")+'</tr>';
-    var body=form.codes.map(function(code){
-      var lbl=labelFor(form,code);
-      var strong=/^(200|300|400|500|20|30|40|50|60|70|10|tongCong)$/.test(code.replace(/^ct/i,""))?' class="tot"':'';
-      var cells=form.cols.map(function(c){ return '<td class="r">'+money(c.map[code]!==undefined?c.map[code]:"")+'</td>'; }).join("");
-      return '<tr'+strong+'><td class="c">'+codeCell(form,code)+'</td><td>'+esc(lbl)+'</td>'+cells+'</tr>';
-    }).join("");
-    return '<div class="formblock"><div class="formttl">'+esc(form.title)+'</div>'+
+    var mauso=form.mauso||"";
+    var vcols=form.cols.map(function(c){return '<th class="vc">'+esc(c.label)+'</th>';}).join("");
+    var head, body;
+    if(form.acct){
+      head='<tr><th class="mc">Số hiệu TK</th>'+vcols+'</tr>';
+      body=form.codes.map(function(code){
+        var h=hier(form,code), tot=h.bold?' class="tot"':'';
+        var cells=form.cols.map(function(c){return '<td class="r">'+money(c.map[code]!==undefined?c.map[code]:"")+'</td>';}).join("");
+        return '<tr'+tot+'><td class="c">'+(code==="tongCong"?"TỔNG CỘNG":esc(stripCt(code)))+'</td>'+cells+'</tr>';
+      }).join("");
+    } else {
+      head='<tr><th class="tc">CHỈ TIÊU</th><th class="mc">Mã số</th>'+vcols+'</tr>';
+      body=form.codes.map(function(code){
+        var h=hier(form,code), tot=h.bold?' class="tot"':'', ind=h.indent?' style="padding-left:22px"':'';
+        var lbl=labelFor(form,code);
+        var cells=form.cols.map(function(c){return '<td class="r">'+money(c.map[code]!==undefined?c.map[code]:"")+'</td>';}).join("");
+        return '<tr'+tot+'><td class="ci"'+ind+'>'+esc(lbl)+'</td><td class="c">'+(code==="tongCong"?"":esc(stripCt(code)))+'</td>'+cells+'</tr>';
+      }).join("");
+    }
+    return '<div class="formblock"><div class="formttl"><span>'+esc(form.title)+'</span>'+(mauso?'<span class="mauso">'+esc(mauso)+'</span>':'')+'</div>'+
       '<table class="taxtbl"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>';
   }
   function renderTax(t){
-    var ky=t.ky?('Kỳ tính thuế: năm '+esc(t.ky)+(t.tuNgay?' ('+esc(t.tuNgay)+' - '+esc(t.denNgay)+')':'')):'';
-    var digi='<div class="signarea">'+sigBox(t.sigs, "", t.signTime)+(t.nguoiKy?'<div class="repname">Người đại diện theo pháp luật: '+esc(t.nguoiKy)+'</div>':'')+'</div>';
+    var ky=t.ky?('Kỳ tính thuế: năm '+esc(t.ky)+(t.tuNgay?' (từ '+esc(t.tuNgay)+' đến '+esc(t.denNgay)+')':'')):'';
     var forms=t.forms.map(renderForm).join("");
+    var lap=t.ngayLap?('<div class="lapngay">'+fmtDateLong(t.ngayLap).replace(/^Ngày/,"Lập, ngày")+'</div>'):'';
+    var stamp=sigBox(t.sigs,"",t.signTime);
+    var sigfoot='<div class="sigfoot">'+
+      '<div class="col"><div class="role">Người lập biểu</div><div class="kyhoten">(Ký, họ tên)</div>'+(t.nguoiLap?'<div class="nm">'+esc(t.nguoiLap)+'</div>':'')+'</div>'+
+      '<div class="col"><div class="role">Kế toán trưởng</div><div class="kyhoten">(Ký, họ tên)</div>'+(t.keToan?'<div class="nm">'+esc(t.keToan)+'</div>':'')+'</div>'+
+      '<div class="col"><div class="role">Người đại diện theo pháp luật</div><div class="kyhoten">(Ký, họ tên, đóng dấu)</div>'+(t.nguoiKy?'<div class="nm">'+esc(t.nguoiKy)+'</div>':'')+stamp+'</div>'+
+      '</div>';
     return '<div class="sheet tax" id="sheet">'+
-      '<div class="title"><div class="t1 blue">'+esc((t.tenTKhai||"TỜ KHAI THUẾ").toUpperCase())+'</div>'+
-      (t.maTKhai?'<div class="t2 blue">Mã tờ khai: '+esc(t.maTKhai)+'</div>':'')+'</div>'+
-      '<div class="party">'+
-        (ky?'<div class="row"><div class="lb">'+ky+'</div></div>':'')+
-        partyRow("Người nộp thuế:",t.nnt.ten)+partyRow("Mã số thuế:",t.nnt.mst)+
-        partyRow("Địa chỉ:",(t.nnt.dchi||"")+(t.nnt.tinh?", "+t.nnt.tinh:""))+
-        partyRow("Cơ quan thuế:",t.cqt)+partyRow("Ngày lập:",fmtDMY(t.ngayLap))+
-      '</div>'+ forms +
-      digi+
-      '<div class="foot">Bản thể hiện của hồ sơ khai thuế điện tử — không thay thế file XML gốc.</div></div>';
+      '<div class="taxhd"><div class="unit">'+
+        (t.nnt.ten?'<div><b>Đơn vị báo cáo:</b> '+esc(t.nnt.ten)+'</div>':'')+
+        (t.nnt.mst?'<div><b>Mã số thuế:</b> '+esc(t.nnt.mst)+'</div>':'')+
+        (t.nnt.dchi?'<div><b>Địa chỉ:</b> '+esc((t.nnt.dchi||"")+(t.nnt.tinh?", "+t.nnt.tinh:""))+'</div>':'')+
+        (t.cqt?'<div><b>Cơ quan thuế:</b> '+esc(t.cqt)+'</div>':'')+
+      '</div></div>'+
+      '<div class="title"><div class="t1 blue">'+esc((t.tenTKhai||"BÁO CÁO TÀI CHÍNH").toUpperCase())+'</div>'+
+      (ky?'<div class="date">'+ky+'</div>':'')+
+      (t.maTKhai?'<div class="cqt">Mã tờ khai: '+esc(t.maTKhai)+'</div>':'')+'</div>'+
+      forms + lap + sigfoot + '</div>';
   }
 
   function render(inv){ return inv.type==="tax"?renderTax(inv):renderInvoice(inv); }
