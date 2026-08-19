@@ -620,7 +620,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
   var LBL = {
     B01a:{"110":"Tiền và các khoản tương đương tiền","120":"Đầu tư tài chính","121":"Chứng khoán kinh doanh","122":"Đầu tư nắm giữ đến ngày đáo hạn","123":"Đầu tư góp vốn vào đơn vị khác","124":"Dự phòng tổn thất đầu tư tài chính","130":"Các khoản phải thu","131":"Phải thu của khách hàng","132":"Trả trước cho người bán","133":"Vốn kinh doanh ở đơn vị trực thuộc","134":"Phải thu khác","135":"Tài sản thiếu chờ xử lý","136":"Dự phòng phải thu khó đòi","140":"Hàng tồn kho","141":"Hàng tồn kho","142":"Dự phòng giảm giá hàng tồn kho","150":"Tài sản cố định","151":"Nguyên giá","152":"Giá trị hao mòn lũy kế","160":"Bất động sản đầu tư","161":"Nguyên giá","162":"Giá trị hao mòn lũy kế","170":"Xây dựng cơ bản dở dang","180":"Tài sản khác","181":"Thuế GTGT được khấu trừ","182":"Tài sản khác","200":"TỔNG CỘNG TÀI SẢN","300":"Nợ phải trả","311":"Phải trả người bán","312":"Người mua trả tiền trước","313":"Thuế và các khoản phải nộp Nhà nước","314":"Phải trả người lao động","315":"Phải trả khác","316":"Vay và nợ thuê tài chính","317":"Phải trả nội bộ về vốn kinh doanh","318":"Dự phòng phải trả","319":"Quỹ khen thưởng, phúc lợi","320":"Quỹ phát triển khoa học và công nghệ","400":"Vốn chủ sở hữu","411":"Vốn góp của chủ sở hữu","412":"Thặng dư vốn cổ phần","413":"Vốn khác của chủ sở hữu","414":"Cổ phiếu quỹ","415":"Chênh lệch tỷ giá hối đoái","416":"Các quỹ thuộc vốn chủ sở hữu","417":"Lợi nhuận sau thuế chưa phân phối","500":"TỔNG CỘNG NGUỒN VỐN"},
     B02:{"01":"Doanh thu bán hàng và cung cấp dịch vụ","02":"Các khoản giảm trừ doanh thu","10":"Doanh thu thuần về bán hàng và cung cấp dịch vụ","11":"Giá vốn hàng bán","20":"Lợi nhuận gộp về bán hàng và cung cấp dịch vụ","21":"Doanh thu hoạt động tài chính","22":"Chi phí tài chính","23":"Trong đó: Chi phí lãi vay","24":"Chi phí quản lý kinh doanh","30":"Lợi nhuận thuần từ hoạt động kinh doanh","31":"Thu nhập khác","32":"Chi phí khác","40":"Lợi nhuận khác","50":"Tổng lợi nhuận kế toán trước thuế","51":"Chi phí thuế thu nhập doanh nghiệp","60":"Lợi nhuận sau thuế thu nhập doanh nghiệp"},
-    B03:{"01":"Lợi nhuận trước thuế","20":"Lưu chuyển tiền thuần từ hoạt động kinh doanh","30":"Lưu chuyển tiền thuần từ hoạt động đầu tư","40":"Lưu chuyển tiền thuần từ hoạt động tài chính","50":"Lưu chuyển tiền thuần trong kỳ","60":"Tiền và tương đương tiền đầu kỳ","61":"Ảnh hưởng của thay đổi tỷ giá hối đoái quy đổi ngoại tệ","70":"Tiền và tương đương tiền cuối kỳ"}
+    B03:{"01":"Lợi nhuận trước thuế","20":"Lưu chuyển tiền thuần từ hoạt động kinh doanh","30":"Lưu chuyển tiền thuần từ hoạt động đầu tư","40":"Lưu chuyển tiền thuần từ hoạt động tài chính","50":"Lưu chuyển tiền thuần trong kỳ","60":"Tiền và tương đương tiền đầu kỳ","61":"Ảnh hưởng của thay đổi tỷ giá hối đoái quy đổi ngoại tệ","70":"Tiền và tương đương tiền cuối kỳ"},
+    GTGT:{"21":"Không phát sinh hoạt động mua, bán trong kỳ","22":"Thuế GTGT còn được khấu trừ kỳ trước chuyển sang","23":"Giá trị của hàng hóa, dịch vụ mua vào","24":"Thuế GTGT của hàng hóa, dịch vụ mua vào","25":"Tổng số thuế GTGT được khấu trừ kỳ này","26":"Hàng hóa, dịch vụ bán ra không chịu thuế GTGT","27":"Hàng hóa, dịch vụ bán ra chịu thuế GTGT","28":"Thuế GTGT của hàng hóa, dịch vụ bán ra","29":"Hàng hóa, dịch vụ bán ra chịu thuế suất 0%","30":"Hàng hóa, dịch vụ bán ra chịu thuế suất 5%","31":"Thuế GTGT của HHDV bán ra chịu thuế suất 5%","32":"Hàng hóa, dịch vụ bán ra chịu thuế suất 10%","33":"Thuế GTGT của HHDV bán ra chịu thuế suất 10%","32a":"Hàng hóa, dịch vụ bán ra không tính thuế","34":"Tổng doanh thu của hàng hóa, dịch vụ bán ra","35":"Tổng số thuế GTGT của hàng hóa, dịch vụ bán ra","36":"Thuế GTGT phát sinh trong kỳ","37":"Điều chỉnh giảm thuế GTGT còn được khấu trừ của các kỳ trước","38":"Điều chỉnh tăng thuế GTGT còn được khấu trừ của các kỳ trước","39a":"Tổng số thuế GTGT đã nộp của doanh thu kinh doanh xây dựng, lắp đặt, bán hàng vãng lai, chuyển nhượng BĐS ngoại tỉnh","40":"Thuế GTGT còn phải nộp trong kỳ","40a":"Thuế GTGT phải nộp của hoạt động sản xuất kinh doanh trong kỳ","40b":"Thuế GTGT mua vào của dự án đầu tư được bù trừ với thuế GTGT phải nộp","41":"Thuế GTGT chưa khấu trừ hết kỳ này","42":"Thuế GTGT đề nghị hoàn","43":"Thuế GTGT còn được khấu trừ chuyển kỳ sau"}
   };
   // form container -> {title, map}
   function prettyTag(t){ return String(t).replace(/^PL_/,"Phụ lục ").replace(/_/g," "); }
@@ -631,6 +632,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       if(tag==="PL_KQHDSXKD") return {title:"Báo cáo kết quả hoạt động kinh doanh",map:LBL.B02,acct:false,mauso:"Mẫu số B02-DNN",hierType:"is"};
       if(tag==="PL_LCTTTT") return {title:"Báo cáo lưu chuyển tiền tệ",map:LBL.B03,acct:false,mauso:"Mẫu số B03-DNN",hierType:"cf"};
       if(tag==="PL_CDTK") return {title:"Bảng cân đối tài khoản",map:{},acct:true,mauso:"Mẫu số F01-DNN",hierType:null};
+    }
+    if(/^842/.test(maTKhai||"") || /giá trị gia tăng/i.test(tenTKhai||"")){
+      if(tag==="CTieuTKhaiChinh") return {title:(tenTKhai||"Tờ khai thuế giá trị gia tăng (01/GTGT)"),map:LBL.GTGT,acct:false,mauso:"Mẫu số 01/GTGT",hierType:null};
     }
     if(tag==="CTieuTKhaiChinh") return {title:(tenTKhai||"Nội dung tờ khai"),map:{},acct:false,mauso:"",hierType:null};
     return {title:prettyTag(tag),map:{},acct:false,mauso:"",hierType:null};
@@ -731,16 +735,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     })(container,"");
     return cols;
   }
-  // extract columns from a container: handles both flat (direct ct leaves) and grouped (BCTC)
-  function extractForm(container){
+  // GROUPED (BCTC): nested leaf-groups become columns
+  function extractGrouped(container){
     var cols=[], order=[], seen={};
     function addCode(k){ if(!seen[k]){seen[k]=1;order.push(k);} }
-    var direct=kids(container).filter(function(c){ return kids(c).length===0 && (/^ct/i.test(ln(c))||ln(c)==="tongCong"); });
-    if(direct.length){
-      var fmap={}, fany=false;
-      direct.forEach(function(l){ var v=textOf(l); fmap[ln(l)]=v; if(v!=="") fany=true; addCode(ln(l)); });
-      if(fany) cols.push({label:"Số tiền", map:fmap});
-    }
     (function walk(el,prefix){
       kids(el).forEach(function(c){
         if(kids(c).length===0) return;
@@ -753,6 +751,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     })(container,"");
     return {cols:cols, codes:order};
   }
+  // FLAT (tờ khai): one "Số tiền" column; only real chỉ tiêu (số + hậu tố chữ), bỏ trường phụ có "_"
+  function extractFlat(container){
+    var map={}, order=[];
+    (function walk(el){
+      kids(el).forEach(function(c){
+        if(kids(c).length===0){
+          var n=stripCt(ln(c));
+          if(/^\d+[a-zA-Z]?$/.test(n)){ if(!(n in map)) order.push(n); map[n]=textOf(c); }
+        } else walk(c);
+      });
+    })(container);
+    if(!order.length) return {cols:[], codes:[]};
+    return {cols:[{label:"Số tiền", map:map}], codes:order};
+  }
   function parseTax(root){
     var tk=find(root,"TKhaiThue"), nnt=find(root,"NNT");
     var maTKhai=val(tk,"maTKhai"), tenTKhai=val(tk,"tenTKhai");
@@ -761,9 +773,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     var pluc=find(root,"PLuc"); if(pluc) kids(pluc).forEach(function(p){ containers.push({tag:ln(p),el:p}); });
     var forms=[];
     containers.forEach(function(cc){
-      var ex=extractForm(cc.el);
-      if(!ex.cols.length) return;
       var meta=formMeta(maTKhai,cc.tag,tenTKhai);
+      var grouped = meta.acct || (meta.hierType==="bs"||meta.hierType==="is"||meta.hierType==="cf");
+      var ex = grouped ? extractGrouped(cc.el) : extractFlat(cc.el);
+      if(!ex.cols.length) return;
       forms.push({tag:cc.tag,title:meta.title,map:meta.map,acct:meta.acct,mauso:meta.mauso,hierType:meta.hierType,cols:ex.cols,codes:ex.codes});
     });
     return {type:"tax",
