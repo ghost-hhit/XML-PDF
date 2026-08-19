@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HDon>
+  <DLHDon Id="ThongTinHoaDon">
+    <TTChung>
+      <PBan>2.0.0</PBan>
+      <THDon>Hóa đơn giá trị gia tăng</THDon>
+      <KHMSHDon>1</KHMSHDon>
+      <KHHDon>C24TAA</KHHDon>
+      <SHDon>1052</SHDon>
+      <NLap>2024-05-17</NLap>
+      <DVTTe>VND</DVTTe>
+      <TGia>1.0</TGia>
+      <HTTToan>TM/CK</HTTToan>
+      <MSTTCGP>0100109106-518</MSTTCGP>
+    </TTChung>
+    <NDHDon>
+      <NBan>
+        <Ten>CÔNG TY CỔ PHẦN CẢNG QUỐC TẾ LẠCH HUYỆN</Ten>
+        <MST>0201234567</MST>
+        <DChi>Khu bến cảng Lạch Huyện, phường Đông Hải 2, quận Hải An, TP. Hải Phòng</DChi>
+        <SDThoai>02253123456</SDThoai>
+        <DCTDTu>ketoan@hhit.com.vn</DCTDTu>
+        <STKNHang>1234567890</STKNHang>
+        <TNHang>Vietcombank - CN Hải Phòng</TNHang>
+      </NBan>
+      <NMua>
+        <HVTNMHang>Nguyễn Văn An</HVTNMHang>
+        <Ten>CÔNG TY TNHH VẬN TẢI BIỂN ĐÔNG</Ten>
+        <MST>0209876543</MST>
+        <DChi>Số 25 Lê Thánh Tông, phường Máy Tơ, quận Ngô Quyền, TP. Hải Phòng</DChi>
+        <HTTToan>CK</HTTToan>
+        <STKNHang>0987654321</STKNHang>
+        <TNHang>BIDV - CN Hải Phòng</TNHang>
+      </NMua>
+      <DSHHDVu>
+        <HHDVu>
+          <TChat>1</TChat>
+          <STT>1</STT>
+          <THHDVu>Dịch vụ nâng hạ container 20 feet</THHDVu>
+          <DVTinh>Cont</DVTinh>
+          <SLuong>10</SLuong>
+          <DGia>500000</DGia>
+          <ThTien>5000000</ThTien>
+          <TSuat>10%</TSuat>
+        </HHDVu>
+        <HHDVu>
+          <TChat>1</TChat>
+          <STT>2</STT>
+          <THHDVu>Dịch vụ lưu bãi container 40 feet</THHDVu>
+          <DVTinh>Ngày</DVTinh>
+          <SLuong>15</SLuong>
+          <DGia>200000</DGia>
+          <ThTien>3000000</ThTien>
+          <TSuat>10%</TSuat>
+        </HHDVu>
+        <HHDVu>
+          <TChat>3</TChat>
+          <STT>3</STT>
+          <THHDVu>Chiết khấu thương mại 2%</THHDVu>
+          <DVTinh></DVTinh>
+          <SLuong></SLuong>
+          <DGia></DGia>
+          <ThTien>160000</ThTien>
+          <TSuat>10%</TSuat>
+        </HHDVu>
+      </DSHHDVu>
+      <TToan>
+        <THTTLTSuat>
+          <LTSuat>
+            <TSuat>10%</TSuat>
+            <ThTien>7840000</ThTien>
+            <TThue>784000</TThue>
+          </LTSuat>
+        </THTTLTSuat>
+        <TgTCThue>7840000</TgTCThue>
+        <TgTThue>784000</TgTThue>
+        <TTCKTMai>160000</TTCKTMai>
+        <TgTTTBSo>8624000</TgTTTBSo>
+        <TgTTTBChu>Tám triệu sáu trăm hai mươi bốn nghìn đồng</TgTTTBChu>
+      </TToan>
+    </NDHDon>
+  </DLHDon>
+  <MCCQT>00A1B2C3D4E5F60718293A4B5C6D7E8F90</MCCQT>
+  <DSCKS>
+    <NBan>
+      <Signature>
+        <SignatureValue>abc123...</SignatureValue>
+        <Object>
+          <SignatureProperties>
+            <SignatureProperty>
+              <SigningTime>2024-05-17T09:30:15</SigningTime>
+            </SignatureProperty>
+          </SignatureProperties>
+        </Object>
+      </Signature>
+    </NBan>
+  </DSCKS>
+</HDon>
