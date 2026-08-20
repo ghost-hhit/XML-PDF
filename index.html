@@ -186,7 +186,7 @@
   <header class="topbar">
     <span class="brand">Hóa đơn XML <b>→</b> PDF</span>
     <span class="tag">Chuyển hóa đơn điện tử (.xml) theo chuẩn Tổng cục Thuế thành bản thể hiện PDF — chạy hoàn toàn trong trình duyệt, không gửi dữ liệu đi đâu.</span>
-      <span class="ver">v6 · 01/GTGT + BCTC</span>
+      <span class="ver">v7 · chữ ký số</span>
   </header>
 
   <div class="wrap">
@@ -870,7 +870,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     var ky=t.ky?('Kỳ tính thuế: năm '+esc(t.ky)+(t.tuNgay?' (từ '+esc(t.tuNgay)+' đến '+esc(t.denNgay)+')':'')):'';
     var forms=t.forms.map(renderForm).join("");
     var lap=t.ngayLap?('<div class="lapngay">'+fmtDateLong(t.ngayLap).replace(/^Ngày/,"Lập, ngày")+'</div>'):'';
-    var stamp=sigBox(t.sigs,"",t.signTime);
+    var stamp=sigBox(t.sigs, t.nnt.ten, t.signTime||t.ngayLap);
     var sigfoot='<div class="sigfoot">'+
       '<div class="col"><div class="role">Người lập biểu</div><div class="kyhoten">(Ký, họ tên)</div>'+(t.nguoiLap?'<div class="nm">'+esc(t.nguoiLap)+'</div>':'')+'</div>'+
       '<div class="col"><div class="role">Kế toán trưởng</div><div class="kyhoten">(Ký, họ tên)</div>'+(t.keToan?'<div class="nm">'+esc(t.keToan)+'</div>':'')+'</div>'+
@@ -931,10 +931,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       : "HoaDon_"+(inv.kyHieu||"")+"_"+(inv.soHD||"");
     b=b.replace(/[^\w\-]+/g,"_").replace(/_+/g,"_").replace(/^_|_$/g,""); return (b||"BanTheHien")+".pdf"; }
 
-  function sheetToPdf(el){ return html2canvas(el,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false}).then(function(canvas){
+  function sheetToPdf(el){
+    var fullH=el.scrollHeight||el.offsetHeight, fullW=el.scrollWidth||el.offsetWidth;
+    var scale=2; if(fullH*scale>12000) scale=Math.max(1,12000/fullH);
+    return html2canvas(el,{scale:scale,backgroundColor:"#ffffff",useCORS:true,logging:false,
+        width:fullW,height:fullH,windowWidth:fullW,windowHeight:fullH,scrollX:0,scrollY:0}).then(function(canvas){
     var pdf=new jsPDF("p","mm","a4"),pageW=210,pageH=297,imgW=pageW,imgH=canvas.height*imgW/canvas.width,img=canvas.toDataURL("image/jpeg",0.95),left=imgH,pos=0;
     pdf.addImage(img,"JPEG",0,pos,imgW,imgH,"","FAST"); left-=pageH;
-    while(left>0){ pos=left-imgH; pdf.addPage(); pdf.addImage(img,"JPEG",0,pos,imgW,imgH,"","FAST"); left-=pageH; }
+    while(left>0.5){ pos=left-imgH; pdf.addPage(); pdf.addImage(img,"JPEG",0,pos,imgW,imgH,"","FAST"); left-=pageH; }
     return pdf; }); }
   function busy(btn,on,label){ if(on){ btn.dataset.txt=btn.textContent; btn.textContent="Đang xử lý…"; btn.disabled=true; } else { btn.textContent=btn.dataset.txt||label; btn.disabled=false; } }
 
